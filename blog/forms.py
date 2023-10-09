@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm,UsernameField
 from django.contrib.auth.models import User
+from .models import Post
 
 # Forms---------------
 class SignUpForm(UserCreationForm):
@@ -20,3 +21,14 @@ class SignUpForm(UserCreationForm):
 class LoginFrom(AuthenticationForm):
     username = UsernameField(widget=forms.TextInput(attrs={"autofocus":True,'class':'form-control'}))
     password =forms.CharField(label=('Password'),strip=False,widget=forms.PasswordInput(attrs={"autocomplete":'current-password','class':'form-control'}))
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model= Post
+        fields= ['title','descriptions']
+        labels = { 'title':"Title","descriptions":"Description"}
+        widgets = {
+            'title':forms.TextInput(attrs={'class':'form-control'}),
+            'descriptions':forms.Textarea(attrs={'class':'form-control'}),
+        }
+    

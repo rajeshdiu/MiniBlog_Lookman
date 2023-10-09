@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render
 from .models import Post
-from .forms import SignUpForm,LoginFrom
+from .forms import SignUpForm,LoginFrom,PostForm
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.contrib.auth.models import User, auth
@@ -28,7 +28,39 @@ def dashboard(request):
     # full_name = user.get_full_name()
     # gps = user.groups.all()
     return render(request,'dasboard.html',{'posts':posts})
+@login_required
+def addPost(request):
+    if request.method == "POST":
+        form = PostForm(request.POST)
+        if form.is_valid:
+            form.save()
+            messages.success(request,"You have successfully posted data")
+            return redirect('dashboard')
+        else:
+           messages.error(request,"Invalid title or descriptios")
+    else:
+        form = PostForm()
+    return render(request,'addpost.html',{"form":form})
 
+# Delete Post-------
+def deletePost(request,id):
+    pk = Post.objects.get(id = id)
+    pk.delete()
+    return redirect('dashboard')
+
+# Update Post-------
+def updatePost(request,id):
+    if request.method == "POST":
+            pi = Post.objects.get(id=id)
+            form = PostForm(request.POST,instance=pi)
+            if form.is_valid:
+                form.save()
+                messages.success(request,'You have successfully update the data')
+                return redirect('dashboard')
+    else:
+        pi = Post.objects.get(id=id)
+        form = PostForm(instance=pi)
+        return render(request,'updatepost.html',{'form':form})
 
 # Sign UP page
 def signupPage(request):
